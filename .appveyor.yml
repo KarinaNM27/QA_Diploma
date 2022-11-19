@@ -1,0 +1,19 @@
+image: Ubuntu  # образ для сборки
+
+stack: jdk 11  # версия JDK
+
+branches:
+  only:
+    - master
+
+build: off
+
+install:
+
+   - docker-compose up -d
+   - sleep 15
+   - java -jar aqa-shop.jar &
+
+build_script:
+  - chmod +x gradlew
+  - ./gradlew test --info "-Dselenide.headless=true"
