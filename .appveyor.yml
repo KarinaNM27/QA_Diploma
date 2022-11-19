@@ -11,9 +11,18 @@ build: off
 install:
 
    - docker-compose up -d
+   - ps: Install-Product node $env:nodejs_version
    - npm install
    - sleep 15
    - java -jar aqa-shop.jar &
+
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  # run tests
+  - npm test
+
 
 build_script:
   - chmod +x gradlew
