@@ -14,13 +14,10 @@ import static com.codeborne.selenide.Selectors.byText;
 public class PaymentPage {
     final private static SelenideElement headingBuy = $(byText("Оплата по карте"));
     final private static SelenideElement headingBuyCredit = $(byText("Кредит по данным карты"));
-
     final private SelenideElement notificationAcceptTitle = $(".notification_status_ok");
     final private SelenideElement notificationAcceptContent = $(".notification_status_ok .notification__content");
-
     final private SelenideElement notificationErrorTitle = $(".notification_status_error");
     final private SelenideElement notificationErrorContent = $(".notification_status_error .notification__content");
-
     final private static SelenideElement number = $("input[placeholder='0000 0000 0000 0000']");
     final private static SelenideElement month = $("input[placeholder='08']");;
     final private static SelenideElement year = $("input[placeholder='22']");
