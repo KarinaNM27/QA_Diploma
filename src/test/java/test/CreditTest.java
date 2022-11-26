@@ -4,7 +4,9 @@ import com.codeborne.selenide.logevents.SelenideLogger;
 import data.DataHelper;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.*;
-import page.PurchasePage;
+import page.CreditPage;
+import page.MainPage;
+
 
 
 import static com.codeborne.selenide.Selenide.open;
@@ -32,84 +34,127 @@ public class CreditTest {
         DataHelper.clearSUTData();
     }
 
+    public final CreditPage creditPage = new CreditPage();
+
+    public void creditApprovedStatus() {
+        String statusExpected = "APPROVED";
+        String statusActual = DataHelper.getCreditStatus();
+        Assertions.assertEquals(statusExpected, statusActual);
+    }
+
+    public void creditDeclinedStatus() {
+        String statusExpected = "DECLINED";
+        String statusActual = DataHelper.getCreditStatus();
+        Assertions.assertEquals(statusExpected, statusActual);
+    }
+
+    public void creditAcceptId() {
+        long idExpected = 1;
+        long idActual = DataHelper.getCreditId();
+        Assertions.assertEquals(idExpected, idActual);
+    }
+
+    public void creditRejectedId() {
+        long idExpected = 0;
+        long idActual = DataHelper.getCreditId();
+        Assertions.assertEquals(idExpected, idActual);
+    }
+
+    public void orderAcceptId() {
+        long idExpected = 1;
+        long idActual = DataHelper.getOrderId();
+        Assertions.assertEquals(idExpected, idActual);
+    }
+
+    public void orderRejectedId() {
+        long idExpected = 0;
+        long idActual = DataHelper.getOrderId();
+        Assertions.assertEquals(idExpected, idActual);
+    }
+
+
     //1.
     @Test
     void shouldBuyCreditOnValidCard() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.acceptPay();
-        paymentPage.creditApprovedStatus();
-        paymentPage.creditAcceptId();
-        paymentPage.orderAcceptId();
+
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.acceptPay();
+        creditApprovedStatus();
+        creditAcceptId();
+        orderAcceptId();
     }
+
     //2.
     @Test
     void shouldNotBuyCreditOnDeclinedCard() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
         var cardInfo = DataHelper.setInvalidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
 
-        paymentPage.rejectedPay();
-        paymentPage.creditDeclinedStatus();
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditPage.rejectedPay();
+        creditDeclinedStatus();
+        creditRejectedId();
+        orderRejectedId();
 
     }
+
     //3.
     @Test
     void shouldNotBuyCreditOnCardLess16Numbers() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123",
                 shortCardNumber = "4444 4444 4444 444";
 
         var cardInfo = DataHelper.setCard(shortCardNumber, month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
+        creditRejectedId();
+        orderRejectedId();
 
     }
+
     //4.
     @Test
     void shouldNotBuyCreditOnZeroCard() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123",
                 shortCardNumber = "0000 0000 0000 0000";
 
         var cardInfo = DataHelper.setCard(shortCardNumber, month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-          paymentPage.rejectedPay();
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.rejectedPay();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -117,21 +162,21 @@ public class CreditTest {
 
     @Test
     void shouldNotBuyCreditOnEmptyNumberOfCard() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123",
                 emptyCardNumber = "";
 
         var cardInfo = DataHelper.setCard(emptyCardNumber, month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -140,22 +185,22 @@ public class CreditTest {
 
     @Test
     void shouldNotBuyCreditOnNotRegisteredCard() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123",
                 notRegisteredCardNumber = "4444 4444 4444 4443";
 
         var cardInfo = DataHelper.setCard(notRegisteredCardNumber, month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.rejectedPay();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.rejectedPay();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -163,22 +208,22 @@ public class CreditTest {
     //7.
     @Test
     void shouldNotBuyCreditWithZeroMonth() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "00",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -186,22 +231,22 @@ public class CreditTest {
 
     @Test
     void shouldNotBuyCreditWith13Month() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "13",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyIncorrectExpiryDate();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyIncorrectExpiryDate();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -209,44 +254,45 @@ public class CreditTest {
     //9.
     @Test
     void shouldNotBuyCreditWithEmptyMonth() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
+
     //10.
     @Test
     void shouldNotBuyCreditWith1NumberOfMonth() {
-        String[] date = DataHelper.generateYear(2);
+        String date = DataHelper.generateYear(2);
         String month = "1",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -254,22 +300,22 @@ public class CreditTest {
     //11.
     @Test
     void shouldNotBuyCreditWithLastYear() {
-        String[] date = DataHelper.generateYear(-1);
+        String date = DataHelper.generateYear(-1);
         String month = "10",
-                year = date[0],
+                year = date,
                 owner = DataHelper.generateOwner("En"),
                 cvv = "123";
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyCardDateExpired();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyCardDateExpired();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -285,14 +331,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -308,14 +354,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyCardDateExpired();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyCardDateExpired();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -331,14 +377,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -354,14 +400,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -377,14 +423,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -400,14 +446,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -423,13 +469,13 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyRequiredField();
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyRequiredField();
+        creditRejectedId();
+        orderRejectedId();
 
     }
 
@@ -444,14 +490,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -467,14 +513,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }
@@ -490,14 +536,14 @@ public class CreditTest {
 
 
         var cardInfo = DataHelper.setValidCard(month, year, owner, cvv);
-        var paymentPage = PurchasePage.selectCreditForm();
+        MainPage.selectCreditForm();
 
-        paymentPage.cleanFields();
-        paymentPage.completeCardData(cardInfo);
-        paymentPage.shouldVerifyErrorOfField();
+        creditPage.cleanFields();
+        creditPage.completeCardData(cardInfo);
+        creditPage.shouldVerifyErrorOfField();
 
-        paymentPage.creditRejectedId();
-        paymentPage.orderRejectedId();
+        creditRejectedId();
+        orderRejectedId();
 
 
     }

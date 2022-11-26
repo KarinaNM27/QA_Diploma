@@ -5,21 +5,21 @@ import com.codeborne.selenide.SelenideElement;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 
-public class PurchasePage {
+public class MainPage {
+
+    final private static SelenideElement heading1 = $(byText("Путешествие дня"));
     final private static SelenideElement buttonBuy = $(byText("Купить"));
 
     final private static SelenideElement buttonCredit = $(byText("Купить в кредит"));
 
 
-    public static PaymentPage selectBuyForm() {
+    public static void selectBuyForm() {
         buttonBuy.click();
-        PaymentPage.buyForm();
-        return new PaymentPage();
+
     }
 
-    public static PaymentPage selectCreditForm() {
+    public static void selectCreditForm() {
         buttonCredit.click();
-        PaymentPage.creditForm();
-        return new PaymentPage();
+
     }
 }

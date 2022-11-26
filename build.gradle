@@ -49,4 +49,7 @@ test {
 
     // в тестах, вызывая `gradlew test -Dselenide.headless=true` будем передавать этот параметр в JVM (где его подтянет Selenide)
     systemProperty 'selenide.headless', System.getProperty('selenide.headless')
+    systemProperty 'dbUrl', System.getProperty('dbUrl')
+    systemProperty 'dbUser', System.getProperty('dbUser')
+    systemProperty 'dbPass', System.getProperty('dbPass')
 }

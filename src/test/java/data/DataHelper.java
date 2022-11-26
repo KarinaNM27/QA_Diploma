@@ -16,8 +16,6 @@ import java.util.Locale;
 public class DataHelper {
 
 
-    final private static String database = "mysql";
-    // либо final private static String database = "postgresql";
     final private static String approvedCardNumber = "4444444444444441";
     final private static String declinedCardNumber = "4444444444444442";
 
@@ -43,9 +41,9 @@ public class DataHelper {
         return setCard(declinedCardNumber, month, year, owner, cvv);
     }
 
-    public static String[] generateYear(int shift) {
+    public static String generateYear(int shift) {
         String date = LocalDate.now().plusYears(shift).format(DateTimeFormatter.ofPattern("yy"));
-        return new String[]{date};
+        return date;
     }
 
 
@@ -55,7 +53,6 @@ public class DataHelper {
     }
 
 
-
     @SneakyThrows
     public static String getPaymentStatus() {
         val sql = "SELECT status FROM payment_entity;";
@@ -63,8 +60,8 @@ public class DataHelper {
         String paymentStatus;
 
         try (
-                val conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "app", "pass")
-                //либо val conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/app", "app", "pass")
+                val conn = DriverManager.getConnection(System.getProperty("dbUrl"), System.getProperty("dbUser"), System.getProperty("dbPass")
+                );
         ) {
             paymentStatus = runner.query(conn, sql, new ScalarHandler<>());
         }
@@ -78,8 +75,8 @@ public class DataHelper {
         String creditStatus;
 
         try (
-                val conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "app", "pass")
-                //либо val conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/app", "app", "pass")
+                val conn = DriverManager.getConnection(System.getProperty("dbUrl"), System.getProperty("dbUser"), System.getProperty("dbPass")
+                );
         ) {
             creditStatus = runner.query(conn, status, new ScalarHandler<>());
         }
@@ -94,8 +91,8 @@ public class DataHelper {
         long paymentId;
 
         try (
-                val conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "app", "pass")
-                //либо val conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/app", "app", "pass")
+                val conn = DriverManager.getConnection(System.getProperty("dbUrl"), System.getProperty("dbUser"), System.getProperty("dbPass")
+                );
         ) {
             paymentId = runner.query(conn, sql, new ScalarHandler<>());
         }
@@ -109,8 +106,8 @@ public class DataHelper {
         long creditId;
 
         try (
-                val conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "app", "pass")
-                //либо val conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/app", "app", "pass")
+                val conn = DriverManager.getConnection(System.getProperty("dbUrl"), System.getProperty("dbUser"), System.getProperty("dbPass")
+                );
         ) {
             creditId = runner.query(conn, sql, new ScalarHandler<>());
         }
@@ -124,46 +121,12 @@ public class DataHelper {
         long orderId;
 
         try (
-                val conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/app", "app", "pass")
-                //либо val conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/app", "app", "pass")
-
+                val conn = DriverManager.getConnection(System.getProperty("dbUrl"), System.getProperty("dbUser"), System.getProperty("dbPass")
+                );
         ) {
             orderId = runner.query(conn, sql, new ScalarHandler<>());
         }
         return orderId;
-    }
-
-
-    @SneakyThrows
-    private static String requestSQL(String requestSQL) {
-
-        Thread.sleep(500);
-        var runner = new QueryRunner();
-
-
-        if (database.equals("mysql")) {
-            try (
-                    var conn = DriverManager.getConnection(
-                            "jdbc:mysql://localhost:3306/app", "app", "pass"
-
-                    )
-            ) {
-                return runner.query(conn, requestSQL, new ScalarHandler<>());
-            }
-        } else if (database.equals("postgresql")) {
-            {
-                try (
-                        var conn = DriverManager.getConnection(
-                                "jdbc:postgresql://localhost:5432/app", "app", "pass"
-
-                        )
-                ) {
-                    return runner.query(conn, requestSQL, new ScalarHandler<>());
-                }
-            }
-        }
-
-        return requestSQL;
     }
 
 
@@ -174,29 +137,16 @@ public class DataHelper {
         var sqlDeleteAllCreditRequest = "DELETE FROM credit_request_entity;";
         var sqlDeleteAllPaymentRequest = "DELETE FROM payment_entity;";
 
-        if (database.equals("mysql")) {
-            try (
-                    var conn = DriverManager.getConnection(
-                            "jdbc:mysql://localhost:3306/app", "app", "pass"
-
-                    )
-            ) {
-                runner.update(conn, sqlDeleteAllOrders);
-                runner.update(conn, sqlDeleteAllCreditRequest);
-                runner.update(conn, sqlDeleteAllPaymentRequest);
-            }
-        } else if (database.equals("postgresql")) {
-            try (
-                    val conn = DriverManager.getConnection(
-                            "jdbc:postgresql://localhost:5432/app", "app", "pass"
-                    )
-            ) {
-                runner.update(conn, sqlDeleteAllOrders);
-                runner.update(conn, sqlDeleteAllCreditRequest);
-                runner.update(conn, sqlDeleteAllPaymentRequest);
-            }
+        try (
+                var conn = DriverManager.getConnection(System.getProperty("dbUrl"), System.getProperty("dbUser"), System.getProperty("dbPass")
+                );
+        ) {
+            runner.update(conn, sqlDeleteAllOrders);
+            runner.update(conn, sqlDeleteAllCreditRequest);
+            runner.update(conn, sqlDeleteAllPaymentRequest);
         }
-
     }
 
 }
+
+
